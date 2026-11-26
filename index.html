@@ -18,7 +18,7 @@
     font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;
     line-height:1.9; -webkit-text-size-adjust:100%; min-height:100vh;
   }
-  .wrap{max-width:680px; margin:0 auto; padding:18px 18px 150px}
+  .wrap{max-width:680px; margin:0 auto; padding:18px 18px 190px}
   .back{
     display:inline-block; font-size:16px; color:var(--ink); text-decoration:none;
     border:1px solid var(--line); border-radius:30px; padding:8px 20px; background:rgba(0,0,0,.35);
@@ -94,6 +94,24 @@
   .volnav a.off{visibility:hidden}
   .nextvol{display:none; text-align:center; margin:0 0 24px}
   .nextvol a{display:inline-block; color:#2a1d10; background:var(--gold); border-radius:30px; padding:12px 28px; text-decoration:none; font-weight:700; letter-spacing:.1em}
+
+  .player .top{display:flex; align-items:center; gap:10px; margin-bottom:6px}
+  .player .top .now-ttl{flex:1; margin-bottom:0; min-width:0}
+  .player .bottom{display:flex; align-items:center; gap:10px; margin-top:6px}
+  .player .bottom .msg{flex:1; min-width:0}
+  .player .pill{
+    font-family:inherit; font-size:14px; width:auto; height:auto; padding:6px 14px; border-radius:18px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink); white-space:nowrap;
+  }
+  .player .pill.on{background:var(--gold); color:#1b1608; border-color:var(--gold); font-weight:700}
+  .tmenu{position:fixed; right:12px; bottom:calc(130px + env(safe-area-inset-bottom)); z-index:30;
+    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px; display:none;
+    box-shadow:0 10px 30px rgba(0,0,0,.5); min-width:190px}
+  .tmenu.open{display:block}
+  .tmenu .th{font-size:13px; color:var(--sub); padding:4px 8px 6px}
+  .tmenu button{display:block; width:100%; text-align:left; font-family:inherit; font-size:16px; color:var(--ink);
+    background:none; border:none; border-top:1px solid var(--line); padding:10px 8px}
+  .tmenu button.sel{color:var(--gold); font-weight:700}
 </style>
 </head>
 <body>
@@ -131,7 +149,10 @@
 
 <div class="player">
   <div class="in">
-    <div class="now-ttl" id="nowttl">「本をひらいて　読む・聞く」で続けて聞けます</div>
+    <div class="top">
+      <div class="now-ttl" id="nowttl">「本をひらいて　読む・聞く」で続けて聞けます</div>
+      <button class="pill" id="timerBtn" aria-haspopup="true">☾ タイマー</button>
+    </div>
     <div class="ctrl">
       <button id="prev" aria-label="前の話">⏮</button>
       <button id="play" class="main" aria-label="再生">▶</button>
@@ -139,10 +160,23 @@
       <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
       <span class="time" id="time">0:00 / 0:00</span>
     </div>
-    <div class="msg" id="msg"></div>
+    <div class="bottom">
+      <div class="msg" id="msg"></div>
+      <button class="pill on" id="contBtn" aria-pressed="true">連続</button>
+    </div>
   </div>
 </div>
 
+
+<div class="tmenu" id="tmenu" role="menu">
+  <div class="th">おやすみタイマー</div>
+  <button data-t="0">切</button>
+  <button data-t="15">15分</button>
+  <button data-t="30">30分</button>
+  <button data-t="45">45分</button>
+  <button data-t="60">60分</button>
+  <button data-t="ep">この話の終わりまで</button>
+</div>
 <audio id="audio" preload="metadata"></audio>
 
 <script>
@@ -183,6 +217,7 @@ function mark(){
 
 function load(i, autoplay){
   if(i<0 || i>=EPISODES.length) return;
+  audio.volume = 1;
   cur = i;
   msg.textContent = '';
   audio.src = EPISODES[i].audio;
@@ -192,7 +227,7 @@ function load(i, autoplay){
   if(autoplay){ audio.play().catch(()=>{}); }
 }
 
-document.getElementById('playall').onclick = ()=>{ continuous = true; load(0,true); };
+document.getElementById('playall').onclick = ()=>{ load(0,true); };
 playBtn.onclick = ()=>{
   if(cur<0){ load(0,true); return; }
   if(audio.paused) audio.play().catch(()=>{}); else audio.pause();
@@ -208,12 +243,56 @@ audio.addEventListener('timeupdate', ()=>{
 });
 seek.addEventListener('input', ()=>{ if(audio.duration) audio.currentTime = seek.value/100*audio.duration; });
 audio.addEventListener('ended', ()=>{
+  if(tMode==='ep'){ clearTimer(); playBtn.textContent='▶'; msg.textContent='タイマーで朗読を止めました。おやすみなさい'; return; }
   if(continuous && cur < EPISODES.length-1){ load(cur+1,true); }
   else { playBtn.textContent='▶'; nowttl.textContent=NEXT_MSG; document.getElementById('nextvol').style.display='block'; }
 });
 audio.addEventListener('error', ()=>{
   if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + EPISODES[cur].audio + '）';
 });
+
+/* ---- 連続 ---- */
+const contBtn = document.getElementById('contBtn');
+try{ if(localStorage.getItem('roudoku_cont')==='0') continuous=false; }catch(e){}
+function showCont(){ contBtn.classList.toggle('on',continuous); contBtn.setAttribute('aria-pressed',continuous); }
+contBtn.onclick = ()=>{ continuous=!continuous; try{localStorage.setItem('roudoku_cont',continuous?'1':'0');}catch(e){} showCont();
+  msg.textContent = continuous ? '次の話へ続けて再生します' : 'この話が終わったら止まります'; };
+showCont();
+
+/* ---- おやすみタイマー ---- */
+const timerBtn = document.getElementById('timerBtn');
+const tmenu = document.getElementById('tmenu');
+let tMode = null, tEnd = 0, tTick = null;
+timerBtn.onclick = (e)=>{ e.stopPropagation(); tmenu.classList.toggle('open'); };
+document.addEventListener('click', (e)=>{ if(!tmenu.contains(e.target)) tmenu.classList.remove('open'); });
+function tLabel(){
+  if(tMode==='min'){ const r=Math.max(0,tEnd-Date.now()); const m=Math.floor(r/60000), s=Math.floor(r%60000/1000);
+    timerBtn.textContent='☾ '+m+':'+String(s).padStart(2,'0'); }
+  else if(tMode==='ep') timerBtn.textContent='☾ この話まで';
+  else timerBtn.textContent='☾ タイマー';
+  timerBtn.classList.toggle('on', !!tMode);
+  [...tmenu.querySelectorAll('button')].forEach(b=>b.classList.toggle('sel',
+    (b.dataset.t==='0'&&!tMode)||(b.dataset.t==='ep'&&tMode==='ep')||(tMode==='min'&&b.dataset.t===String(tMode&&tSet))));
+}
+let tSet = 0;
+function clearTimer(){ clearInterval(tTick); tTick=null; tMode=null; tEnd=0; tSet=0; tLabel(); }
+function sleepNow(){
+  clearTimer();
+  let v = audio.volume; const fade = setInterval(()=>{
+    v -= 0.1; if(v<=0){ clearInterval(fade); audio.pause(); audio.volume=1; } else audio.volume=v; }, 300);
+  msg.textContent='タイマーで朗読を止めました。おやすみなさい';
+}
+tmenu.addEventListener('click', (e)=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const t=b.dataset.t; clearTimer();
+  if(t==='ep'){ tMode='ep'; msg.textContent='この話が終わったら止まります'; }
+  else if(t!=='0'){ tMode='min'; tSet=+t; tEnd=Date.now()+tSet*60000;
+    tTick=setInterval(()=>{ if(Date.now()>=tEnd) sleepNow(); else tLabel(); },1000);
+    msg.textContent=t+'分後に朗読を止めます'; }
+  else msg.textContent='タイマーを切りました';
+  tLabel(); tmenu.classList.remove('open');
+});
+tLabel();
 </script>
 </body>
 </html>
