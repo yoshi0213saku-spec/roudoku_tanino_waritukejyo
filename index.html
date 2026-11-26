@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>谷の割付状　一の巻 ― 天保の名主ものがたり</title>
+<style>
+  :root{
+    --bg:#1d110d; --bg2:#26160f; --ink:#f3e6d2; --sub:#c4a58a;
+    --gold:#d8a557; --line:#47291c; --card:#2a1912;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 9px),
+      linear-gradient(180deg,#24140e,#140a07);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;
+    line-height:1.9; -webkit-text-size-adjust:100%; min-height:100vh;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:18px 18px 150px}
+  .back{
+    display:inline-block; font-size:16px; color:var(--ink); text-decoration:none;
+    border:1px solid var(--line); border-radius:30px; padding:8px 20px; background:rgba(0,0,0,.35);
+  }
+  /* 本の表紙 */
+  .book{position:relative; width:min(62vw,300px); aspect-ratio:300/520; margin:26px auto 8px}
+  .book .edge{position:absolute; top:2%; left:-3.5%; width:5%; height:96%;
+    background:repeating-linear-gradient(90deg,#d8cfbd 0 1px,#a99f8c 1px 2px); border-radius:3px 0 0 3px;
+    box-shadow:-2px 4px 10px rgba(0,0,0,.5)}
+  .book .cover{position:absolute; inset:0; border-radius:6px 3px 3px 6px; overflow:hidden;
+    box-shadow:0 14px 30px rgba(0,0,0,.6), 0 2px 4px rgba(0,0,0,.6)}
+  .book .cover img{position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover}
+  .book .spine{position:absolute; top:0; bottom:0; left:0; width:7%;
+    background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(255,255,255,.18) 45%,rgba(0,0,0,.25))}
+  .book .vt{position:absolute; top:7%; right:12%; writing-mode:vertical-rl; color:#f3ead6;
+    font-size:min(10.5vw,52px); letter-spacing:.12em; line-height:1; text-shadow:0 2px 6px rgba(0,0,0,.45)}
+  .book .vsub{position:absolute; top:8.5%; right:30%; writing-mode:vertical-rl; color:#e3d6c0;
+    font-size:min(3.6vw,17px); letter-spacing:.32em; padding-right:.6em; border-right:1px solid rgba(243,234,214,.55);
+    line-height:1}
+  .book .author{position:absolute; left:12%; bottom:6%; color:#f3ead6; font-weight:700;
+    font-size:min(4.6vw,22px); letter-spacing:.2em; text-shadow:0 2px 6px rgba(0,0,0,.6)}
+  .book .author span{margin-right:1.2em}
+  .series{text-align:center; color:var(--gold); font-weight:700; letter-spacing:.3em; margin-top:26px; font-size:17px}
+  h1{text-align:center; font-size:min(7vw,32px); margin:4px 0 0; letter-spacing:.08em; font-weight:700; white-space:nowrap}
+  .subtitle{text-align:center; color:var(--sub); font-size:17px; letter-spacing:.08em}
+  .desc{font-size:17px; margin:18px 0 22px; line-height:2}
+  .playall{
+    display:block; width:100%; margin:0 0 24px; padding:16px; font-size:18px; font-family:inherit; font-weight:700;
+    background:linear-gradient(180deg,#e2b264,#c98d3e); color:#2a1d10; border:none; border-radius:40px; letter-spacing:.12em;
+    box-shadow:0 4px 14px rgba(0,0,0,.4);
+  }
+  .list{list-style:none; margin:0 0 26px; padding:0}
+  .list li{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    margin-bottom:10px; padding:12px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;
+  }
+  .list li.now{border-color:var(--gold)}
+  .list .no{font-size:14px; color:var(--gold); min-width:56px}
+  .list .ttl{flex:1; font-size:17px}
+  .list .mark{font-size:13px; color:var(--gold); visibility:hidden}
+  .list li.now .mark{visibility:visible}
+  article{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 20px; margin-bottom:20px; scroll-margin-top:12px; overflow:hidden}
+  .epimg{display:block; width:calc(100% + 40px); margin:-22px -20px 16px; aspect-ratio:16/10; object-fit:cover}
+  article h2{font-size:20px; margin:0 0 4px; font-weight:600}
+  article .era{font-size:14px; color:var(--sub); margin-bottom:12px}
+  article p{margin:0 0 1em; font-size:17px; text-indent:1em; line-height:2.2}
+  article p.q{text-indent:0}
+  article rt{font-size:.55em; color:var(--sub)}
+  article.now{border-color:var(--gold)}
+  .readbtn{
+    font-family:inherit; font-size:15px; padding:6px 16px; border-radius:18px;
+    border:1px solid var(--gold); background:transparent; color:var(--gold); margin-bottom:12px;
+  }
+  footer{font-size:13px; color:var(--sub); text-align:center; margin-top:28px; line-height:1.9}
+  footer .back{margin-top:16px}
+  .player{
+    position:fixed; left:0; right:0; bottom:0; background:rgba(24,12,8,.96);
+    border-top:1px solid var(--line); padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .player .in{max-width:680px; margin:0 auto}
+  .player .now-ttl{font-size:14px; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink)}
+  .player .ctrl{display:flex; align-items:center; gap:10px}
+  .player button{
+    font-family:inherit; font-size:18px; width:46px; height:40px; border-radius:8px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink);
+  }
+  .player button.main{background:var(--gold); color:#2a120a; border:none; width:58px}
+  .player input[type=range]{flex:1; accent-color:var(--gold)}
+  .player .time{font-size:12px; color:var(--sub); min-width:76px; text-align:right}
+  .player .msg{font-size:12px; color:var(--gold); min-height:1em}
+  .volnav{display:flex; justify-content:space-between; gap:10px; margin:26px 0 6px}
+  .volnav a{flex:1; text-align:center; color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:24px; padding:10px 6px; background:rgba(0,0,0,.3); font-size:15px}
+  .volnav a.off{visibility:hidden}
+  .nextvol{display:none; text-align:center; margin:0 0 24px}
+  .nextvol a{display:inline-block; color:#2a1d10; background:var(--gold); border-radius:30px; padding:12px 28px; text-decoration:none; font-weight:700; letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../roudoku_riaru_hondana/">‹ 本棚にもどす</a>
+
+  <div class="book" aria-label="谷の割付状　一の巻の表紙">
+    <div class="edge"></div>
+    <div class="cover"><img src="images/cover_1.jpg" alt="谷の割付状　一の巻の表紙"></div>
+  </div>
+
+  <div class="series">朗読帖　第九冊</div>
+  <h1>谷の割付状　一の巻</h1>
+  <div class="subtitle">「はじめに」と第一話</div>
+
+  <p class="desc">江戸時代、幕府の天領だった南相木の谷。毎年秋になると、代官所から年貢の割付状が届きました。史実をもとにした全五巻の朗読の一の巻。時代と史実をたどる「はじめに」と、名主の清兵衛が割付状を受け取る秋の物語です。</p>
+
+  <button class="playall" id="playall">▶ 本をひらいて　読む・聞く</button>
+
+  <ul class="list" id="list"></ul>
+
+  <div id="texts"></div>
+
+  <div class="nextvol" id="nextvol"><a href="maki2.html">二の巻へすすむ ›</a></div>
+
+  <div class="volnav"><a class="off" href="#">‹ </a><a class="" href="maki2.html">二の巻 ›</a></div>
+
+  <footer>
+    この物語は、江戸時代の南相木村について確かめられた事実と、<br>
+    天領の村で広く行われていた年貢のしくみをもとにした創作です。<br>
+    登場人物はすべて架空の人物です。<br>
+    <a class="back" href="../roudoku_riaru_hondana/">‹ 本棚にもどす</a>
+  </footer>
+</div>
+
+<div class="player">
+  <div class="in">
+    <div class="now-ttl" id="nowttl">「本をひらいて　読む・聞く」で続けて聞けます</div>
+    <div class="ctrl">
+      <button id="prev" aria-label="前の話">⏮</button>
+      <button id="play" class="main" aria-label="再生">▶</button>
+      <button id="next" aria-label="次の話">⏭</button>
+      <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
+      <span class="time" id="time">0:00 / 0:00</span>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+const EPISODES = [{"no": "はじめに", "title": "時代と史実のこと", "era": "", "audio": "audio/00_hajimeni.mp3", "html": "<p class=\"q\">「谷の<ruby>割付状<rt>わりつけじょう</rt></ruby>　<ruby>南相木村<rt>みなみあいきむら</rt></ruby>・<ruby>天保<rt>てんぽう</rt></ruby>の<ruby>名主<rt>なぬし</rt></ruby>ものがたり」。はじめに。</p><p>江戸時代、南相木村は幕府の<ruby>直轄地<rt>ちょっかつち</rt></ruby>、<ruby>天領<rt>てんりょう</rt></ruby>でした。戦国の世にこの谷を治めた<ruby>相木氏<rt>あいきし</rt></ruby>は、<ruby>武田家<rt>たけだけ</rt></ruby>がほろびたのち<ruby>上州<rt>じょうしゅう</rt></ruby>へ去り、谷に殿様はいなくなりました。年貢を取り立てたのは、遠く<ruby>小諸<rt>こもろ</rt></ruby>の<ruby>御影<rt>みかげ</rt></ruby>にあった<ruby>代官所<rt>だいかんしょ</rt></ruby>です。</p><p>村は<ruby>南相木川<rt>みなみあいきがわ</rt></ruby>にそって東西<ruby>五里<rt>ごり</rt></ruby>、南北<ruby>一里<rt>いちり</rt></ruby>の細長い谷。田はわずかで、人びとは畑と山の仕事で暮らしを立てていました。谷の中ほどを通る<ruby>上州道<rt>じょうしゅうみち</rt></ruby>は、山をこえて<ruby>上野国<rt>こうずけのくに</rt></ruby>へ、そして<ruby>秩父<rt>ちちぶ</rt></ruby>へと続いていました。</p><p>代官所と村とをつないだのが、村人の中から選ばれた名主です。<ruby>組頭<rt>くみがしら</rt></ruby>がこれを助け、<ruby>百姓代<rt>ひゃくしょうだい</rt></ruby>が、<ruby>百姓<rt>ひゃくしょう</rt></ruby>の立場から村の<ruby>政<rt>まつりごと</rt></ruby>を見守りました。名主は村の顔であり、村の声を代官所へ届ける役目も負っていました。</p><p>毎年秋になると、代官所から名主あてに、<ruby>年貢割付状<rt>ねんぐわりつけじょう</rt></ruby>が届きます。割付状とは、その年に村が納める年貢の額を知らせる、納税の通知書です。宛先は名主ひとりではなく、組頭と<ruby>惣百姓<rt>そうびゃくしょう</rt></ruby>、つまり村の者すべてでした。名主は、百姓<ruby>一軒一軒<rt>いっけんいっけん</rt></ruby>の<ruby>持ち高<rt>もちだか</rt></ruby>に応じて年貢を割り振り、取り立て、村としてまとめて納めました。年貢は村全体で請け負うもの。払えない家があれば、村で支え合いました。田の少ない山の村では、年貢をお金で納めることも多かったのです。</p><p>名主の家には、村の田畑を記した<ruby>検地帳<rt>けんちちょう</rt></ruby>や、毎年の割付状、年貢を納め終えたしるしの<ruby>皆済目録<rt>かいさいもくろく</rt></ruby>などが、代々大切にしまわれていました。今、わたしたちが昔の村のすがたを知ることができるのは、こうした古い<ruby>帳面<rt>ちょうめん</rt></ruby>が残されてきたおかげです。</p><p>天保三年、村には芝居小屋、<ruby>神楽殿<rt>かぐらでん</rt></ruby>が建てられました。その建物は今も、<ruby>廻り舞台<rt>まわりぶたい</rt></ruby>をそなえた民俗資料館として残っています。そして翌、天保四年ごろから、冷たい夏と<ruby>凶作<rt>きょうさく</rt></ruby>が国じゅうをおそいました。天保の<ruby>飢饉<rt>ききん</rt></ruby>です。</p><p>この物語は、こうした史実と、天領の村のしくみをもとにした創作です。名主の<ruby>清兵衛<rt>せいべえ</rt></ruby>、息子の<ruby>与吉<rt>よきち</rt></ruby>、百姓代の<ruby>源次<rt>げんじ</rt></ruby>たちは<ruby>架空<rt>かくう</rt></ruby>の人物で、村で実際にあった出来事を記したものではありません。</p><p>第一話「割付状の届く日」。第二話「冷たい夏」。第三話「御影への道」。第四話「峠をこえる炭」。第五話「廻り舞台」。</p><p>五つの話を、どうぞお聞きください。</p>"}, {"no": "第一話", "title": "割付状の届く日", "era": "天保三年　秋", "audio": "audio/01_waritsuke_jou.mp3", "html": "<p>第一話。<ruby>割付状<rt>わりつけじょう</rt></ruby>の届く日。</p><p><ruby>天保<rt>てんぽう</rt></ruby>三年の秋。山の木々が色づきはじめたころ、<ruby>名主<rt>なぬし</rt></ruby>の<ruby>清兵衛<rt>せいべえ</rt></ruby>は、<ruby>囲炉裏<rt>いろり</rt></ruby>ばたで一枚の紙をひろげていた。</p><p class=\"q\">「<ruby>卯御年貢可納割付之事<rt>うのおんねんぐおさむべきわりつけのこと</rt></ruby>」。</p><p><ruby>御影<rt>みかげ</rt></ruby>の<ruby>代官所<rt>だいかんしょ</rt></ruby>から届いた割付状である。あて名は「<ruby>南相木村<rt>みなみあいきむら</rt></ruby>　名主・<ruby>組頭<rt>くみがしら</rt></ruby>・<ruby>惣百姓<rt>そうびゃくしょう</rt></ruby>」。村の者すべてにあてた、今年の年貢の知らせだった。</p><p class=\"q\">「どうだい、おとっつぁん」</p><p>十五になる息子の<ruby>与吉<rt>よきち</rt></ruby>が、横からのぞきこんだ。</p><p class=\"q\">「<ruby>定免<rt>じょうめん</rt></ruby>のとおりだ。<ruby>去年<rt>きょねん</rt></ruby>と同じだよ」</p><p>清兵衛はほっとしたように言った。定免とは、豊作でも不作でも、決められた年数のあいだ同じ額を納めるやり方である。数字が変わらないのは、ありがたいことでもあり、おそろしいことでもあった。<ruby>凶作<rt>きょうさく</rt></ruby>の年にも、同じだけ納めなくてはならないからだ。</p><p>その夜、清兵衛は組頭の<ruby>茂左衛門<rt>もざえもん</rt></ruby>と、<ruby>百姓代<rt>ひゃくしょうだい</rt></ruby>の<ruby>源次<rt>げんじ</rt></ruby>を家に呼んだ。<ruby>行灯<rt>あんどん</rt></ruby>の明かりの下で三人は<ruby>帳面<rt>ちょうめん</rt></ruby>をめくり、<ruby>百姓<rt>ひゃくしょう</rt></ruby><ruby>一軒一軒<rt>いっけんいっけん</rt></ruby>の<ruby>持ち高<rt>もちだか</rt></ruby>に応じて、年貢を割り振っていく。そろばんの玉をはじく音だけが、静かな部屋にひびいた。</p><p class=\"q\">「おさよのところは、今年も大丈夫かね」</p><p>源次がぽつりと言った。おさよは去年、夫を山の事故で亡くし、幼い子ふたりをかかえていた。</p><p class=\"q\">「畑は親戚が手伝っている。なんとかなるだろう」</p><p>茂左衛門が答えた。清兵衛は黙って、帳面に筆を走らせた。</p><p>この年、村の<ruby>中島<rt>なかじま</rt></ruby>では、新しい<ruby>神楽殿<rt>かぐらでん</rt></ruby>ができあがったばかりだった。<ruby>茅葺き<rt>かやぶき</rt></ruby>の大きな屋根の下には、くるりと回る舞台まで仕掛けてある。村の<ruby>大工<rt>だいく</rt></ruby>たちが、ひと夏かけてこしらえたものだ。</p><p>秋祭りの晩、村の若い衆が化粧をして芝居を演じた。与吉も、生まれてはじめて<ruby>女形<rt>おやま</rt></ruby>の役をもらった。</p><p>笛と太鼓の音が谷にひびき、ろうそくの灯が舞台をゆらゆらと照らした。舞台がくるりと回るたびに、年寄りも子どもも、手をたたいて笑った。</p><p class=\"q\">「いい年だったな」</p><p>帰り道、清兵衛は星空を見あげてつぶやいた。冷たい川風が、ほてった<ruby>頬<rt>ほお</rt></ruby>に心地よかった。</p><p>だがこの晩が、しばらくのあいだ、谷でいちばん明るい夜になるとは、まだ誰も知らなかった。</p>"}];
+const NEXT_MSG = '一の巻を聞き終えました。次は二の巻へ';
+
+const audio = document.getElementById('audio');
+const list = document.getElementById('list');
+const texts = document.getElementById('texts');
+const playBtn = document.getElementById('play');
+const seek = document.getElementById('seek');
+const timeEl = document.getElementById('time');
+const nowttl = document.getElementById('nowttl');
+const msg = document.getElementById('msg');
+let cur = -1;
+let continuous = true;
+
+
+EPISODES.forEach((ep,i)=>{
+  const li = document.createElement('li');
+  li.innerHTML = `<span class="no">${ep.no}</span><span class="ttl">${ep.title}</span><span class="mark">♪ 再生中</span>`;
+  li.onclick = ()=>{ load(i,true); };
+  list.appendChild(li);
+
+  const art = document.createElement('article');
+  art.id = 'ep'+i;
+  art.innerHTML = `<h2>${ep.no}　${ep.title}</h2>${ep.era?`<div class="era">${ep.era}</div>`:''}<button class="readbtn">▶ この話を聞く</button>${ep.html}`;
+  art.querySelector('.readbtn').onclick = ()=>{ load(i,true); };
+  texts.appendChild(art);
+});
+
+function fmt(t){ if(!isFinite(t)) return '0:00'; const m=Math.floor(t/60), s=Math.floor(t%60); return m+':'+String(s).padStart(2,'0'); }
+
+function mark(){
+  [...list.children].forEach((li,i)=>li.classList.toggle('now',i===cur));
+  [...texts.children].forEach((a,i)=>a.classList.toggle('now',i===cur));
+}
+
+function load(i, autoplay){
+  if(i<0 || i>=EPISODES.length) return;
+  cur = i;
+  msg.textContent = '';
+  audio.src = EPISODES[i].audio;
+  nowttl.textContent = EPISODES[i].no + '　' + EPISODES[i].title;
+  mark();
+  document.getElementById('ep'+i).scrollIntoView({behavior:'smooth', block:'start'});
+  if(autoplay){ audio.play().catch(()=>{}); }
+}
+
+document.getElementById('playall').onclick = ()=>{ continuous = true; load(0,true); };
+playBtn.onclick = ()=>{
+  if(cur<0){ load(0,true); return; }
+  if(audio.paused) audio.play().catch(()=>{}); else audio.pause();
+};
+document.getElementById('prev').onclick = ()=>{ load(Math.max(0,cur-1),true); };
+document.getElementById('next').onclick = ()=>{ if(cur<EPISODES.length-1) load(cur+1,true); };
+
+audio.addEventListener('play', ()=>{ playBtn.textContent='⏸'; });
+audio.addEventListener('pause', ()=>{ playBtn.textContent='▶'; });
+audio.addEventListener('timeupdate', ()=>{
+  if(audio.duration){ seek.value = audio.currentTime/audio.duration*100; }
+  timeEl.textContent = fmt(audio.currentTime)+' / '+fmt(audio.duration);
+});
+seek.addEventListener('input', ()=>{ if(audio.duration) audio.currentTime = seek.value/100*audio.duration; });
+audio.addEventListener('ended', ()=>{
+  if(continuous && cur < EPISODES.length-1){ load(cur+1,true); }
+  else { playBtn.textContent='▶'; nowttl.textContent=NEXT_MSG; document.getElementById('nextvol').style.display='block'; }
+});
+audio.addEventListener('error', ()=>{
+  if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + EPISODES[cur].audio + '）';
+});
+</script>
+</body>
+</html>
