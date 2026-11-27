@@ -148,6 +148,8 @@
 <script>
 const EPISODES = [{"no": "第四話", "title": "峠をこえる炭", "era": "天保四年　冬 ― 天保五年　春", "audio": "audio/04_tougeno_sumi.mp3", "html": "<p>第四話。峠をこえる炭。</p><p>年貢が減っても、それで暮らしが楽になるわけではなかった。食べる物が、足りないのだ。人びとは、わずかな<ruby>粟<rt>あわ</rt></ruby>に大根の葉や木の実をまぜて、かゆにしてすすった。</p><p>この谷では、年貢の多くを、米ではなくお金で納めていた。田のない山の村では、それがあたりまえだった。畑の物や山の物を売ってお金にかえ、それで年貢を納めるのである。</p><p class=\"q\">「炭を焼こう。焼けるだけ焼いて、<ruby>上州<rt>じょうしゅう</rt></ruby>へ売りに行くんだ」</p><p>言いだしたのは<ruby>源次<rt>げんじ</rt></ruby>だった。谷の中ほどを通る<ruby>上州道<rt>じょうしゅうみち</rt></ruby>は、山をこえて<ruby>上野国<rt>こうずけのくに</rt></ruby>へ、さらに<ruby>秩父<rt>ちちぶ</rt></ruby>へと続いている。山の向こうの村や町では、炭がよく売れた。</p><p>その冬、谷じゅうの男たちが山に入った。木を<ruby>伐り<rt>きり</rt></ruby>、<ruby>窯<rt>かま</rt></ruby>をつくり、炭を焼いた。白い煙が、あちこちの<ruby>尾根<rt>おね</rt></ruby>から立ちのぼった。女たちは<ruby>俵<rt>たわら</rt></ruby>を編み、子どもたちは<ruby>焚き木<rt>たきぎ</rt></ruby>を運んだ。</p><p>雪のふる朝、男たちは<ruby>炭俵<rt>すみだわら</rt></ruby>を背負って峠へむかった。<ruby>与吉<rt>よきち</rt></ruby>もその列にくわわった。俵は肩にくいこみ、雪道で何度も足をとられた。息は白く、手はかじかんで感覚がなかった。それでも誰ひとり、<ruby>弱音<rt>よわね</rt></ruby>をはかなかった。</p><p>峠の上で、源次が振りかえって言った。</p><p class=\"q\">「見ろ、与吉。あれがおれたちの谷だ」</p><p>雪におおわれた谷の底に、家々の屋根が小さく並んでいた。与吉は、背中の俵をもう一度背負いなおした。</p><p>春が来て、年貢の取り立ての日になった。</p><p><ruby>清兵衛<rt>せいべえ</rt></ruby>の家の<ruby>土間<rt>どま</rt></ruby>に、<ruby>百姓<rt>ひゃくしょう</rt></ruby>たちが一人ずつ、<ruby>銭<rt>ぜに</rt></ruby>や金を持ってきた。清兵衛が<ruby>帳面<rt>ちょうめん</rt></ruby>に書きこみ、<ruby>茂左衛門<rt>もざえもん</rt></ruby>が数をかぞえる。</p><p>最後に来たのは、おさよだった。手ににぎった銭は、決められた額の半分にも足りなかった。</p><p class=\"q\">「すみません……これだけしか……」</p><p>おさよは、土間に手をついた。</p><p>しんとした土間で、源次が口をひらいた。</p><p class=\"q\">「年貢は村で納めるもんだ。足りねえ分は、みんなで分けりゃいい」</p><p class=\"q\">「おれのところで、少し持つ」</p><p class=\"q\">「うちも、炭の金がまだある」</p><p>あちこちから声があがった。おさよは顔をおおって泣いた。</p><p>清兵衛はその様子を、だまって帳面に書きとめた。<ruby>名主<rt>なぬし</rt></ruby>の家に代々残す帳面である。いつか、この谷に生まれる誰かが読むかもしれない。そう思いながら、<ruby>一字一字<rt>いちじいちじ</rt></ruby>、ていねいに書いた。</p>"}];
 const NEXT_MSG = '四の巻を聞き終えました。次は五の巻へ';
+const ALL = [{"no": "はじめに", "title": "時代と史実のこと", "audio": "audio/00_hajimeni.mp3", "maki": "一の巻", "page": "index.html"}, {"no": "第一話", "title": "割付状の届く日", "audio": "audio/01_waritsuke_jou.mp3", "maki": "一の巻", "page": "index.html"}, {"no": "第二話", "title": "冷たい夏", "audio": "audio/02_tsumetai_natsu.mp3", "maki": "二の巻", "page": "maki2.html"}, {"no": "第三話", "title": "御影への道", "audio": "audio/03_mikageno_michi.mp3", "maki": "三の巻", "page": "maki3.html"}, {"no": "第四話", "title": "峠をこえる炭", "audio": "audio/04_tougeno_sumi.mp3", "maki": "四の巻", "page": "maki4.html"}, {"no": "第五話", "title": "廻り舞台", "audio": "audio/05_mawari_butai.mp3", "maki": "五の巻", "page": "maki5.html"}];
+const START = 4;
 
 const audio = document.getElementById('audio');
 const list = document.getElementById('list');
@@ -157,48 +159,57 @@ const seek = document.getElementById('seek');
 const timeEl = document.getElementById('time');
 const nowttl = document.getElementById('nowttl');
 const msg = document.getElementById('msg');
-let cur = -1;
-let continuous = true;
-
+let cur = -1;   // ALL（全五巻を通した順番）の中の位置
 
 EPISODES.forEach((ep,i)=>{
   const li = document.createElement('li');
   li.innerHTML = `<span class="no">${ep.no}</span><span class="ttl">${ep.title}</span><span class="mark">♪ 再生中</span>`;
-  li.onclick = ()=>{ load(i,true); };
+  li.onclick = ()=>{ load(START+i,true); };
   list.appendChild(li);
 
   const art = document.createElement('article');
   art.id = 'ep'+i;
   art.innerHTML = `<h2>${ep.no}　${ep.title}</h2>${ep.era?`<div class="era">${ep.era}</div>`:''}<button class="readbtn">▶ この話を聞く</button>${ep.html}`;
-  art.querySelector('.readbtn').onclick = ()=>{ load(i,true); };
+  art.querySelector('.readbtn').onclick = ()=>{ load(START+i,true); };
   texts.appendChild(art);
 });
 
 function fmt(t){ if(!isFinite(t)) return '0:00'; const m=Math.floor(t/60), s=Math.floor(t%60); return m+':'+String(s).padStart(2,'0'); }
+function local(){ const k = cur-START; return (k>=0 && k<EPISODES.length) ? k : -1; }
 
 function mark(){
-  [...list.children].forEach((li,i)=>li.classList.toggle('now',i===cur));
-  [...texts.children].forEach((a,i)=>a.classList.toggle('now',i===cur));
+  const k = local();
+  [...list.children].forEach((li,i)=>li.classList.toggle('now',i===k));
+  [...texts.children].forEach((a,i)=>a.classList.toggle('now',i===k));
 }
 
-function load(i, autoplay){
-  if(i<0 || i>=EPISODES.length) return;
-  cur = i;
+/* 全五巻を通して、はじめから最後まで続けて再生する */
+function load(g, autoplay){
+  if(g<0 || g>=ALL.length) return;
+  cur = g;
   msg.textContent = '';
-  audio.src = EPISODES[i].audio;
-  nowttl.textContent = EPISODES[i].no + '　' + EPISODES[i].title;
+  const a = ALL[g];
+  audio.src = a.audio;
+  const k = local();
+  if(k>=0){
+    nowttl.textContent = a.no + '　' + a.title;
+    document.getElementById('ep'+k).scrollIntoView({behavior:'smooth', block:'start'});
+  }else{
+    nowttl.textContent = a.maki + '　' + a.no + '　' + a.title;
+    msg.textContent = 'この話の本文は「' + a.maki + '」のページにあります（再生はこのまま続きます）';
+    const nv = document.getElementById('nextvol'); if(nv) nv.style.display='block';
+  }
   mark();
-  document.getElementById('ep'+i).scrollIntoView({behavior:'smooth', block:'start'});
   if(autoplay){ audio.play().catch(()=>{}); }
 }
 
-document.getElementById('playall').onclick = ()=>{ continuous = true; load(0,true); };
+document.getElementById('playall').onclick = ()=>{ load(START,true); };
 playBtn.onclick = ()=>{
-  if(cur<0){ load(0,true); return; }
+  if(cur<0){ load(START,true); return; }
   if(audio.paused) audio.play().catch(()=>{}); else audio.pause();
 };
 document.getElementById('prev').onclick = ()=>{ load(Math.max(0,cur-1),true); };
-document.getElementById('next').onclick = ()=>{ if(cur<EPISODES.length-1) load(cur+1,true); };
+document.getElementById('next').onclick = ()=>{ if(cur<ALL.length-1) load(cur+1,true); };
 
 audio.addEventListener('play', ()=>{ playBtn.textContent='⏸'; });
 audio.addEventListener('pause', ()=>{ playBtn.textContent='▶'; });
@@ -208,11 +219,11 @@ audio.addEventListener('timeupdate', ()=>{
 });
 seek.addEventListener('input', ()=>{ if(audio.duration) audio.currentTime = seek.value/100*audio.duration; });
 audio.addEventListener('ended', ()=>{
-  if(continuous && cur < EPISODES.length-1){ load(cur+1,true); }
-  else { playBtn.textContent='▶'; nowttl.textContent=NEXT_MSG; document.getElementById('nextvol').style.display='block'; }
+  if(cur < ALL.length-1){ load(cur+1,true); }
+  else { playBtn.textContent='▶'; nowttl.textContent='『谷の割付状』全五巻、おわりまで聞きました'; msg.textContent=''; }
 });
 audio.addEventListener('error', ()=>{
-  if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + EPISODES[cur].audio + '）';
+  if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + ALL[cur].audio + '）';
 });
 </script>
 </body>

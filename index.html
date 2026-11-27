@@ -18,7 +18,7 @@
     font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;
     line-height:1.9; -webkit-text-size-adjust:100%; min-height:100vh;
   }
-  .wrap{max-width:680px; margin:0 auto; padding:18px 18px 190px}
+  .wrap{max-width:680px; margin:0 auto; padding:18px 18px 150px}
   .back{
     display:inline-block; font-size:16px; color:var(--ink); text-decoration:none;
     border:1px solid var(--line); border-radius:30px; padding:8px 20px; background:rgba(0,0,0,.35);
@@ -94,19 +94,6 @@
   .volnav a.off{visibility:hidden}
   .nextvol{display:none; text-align:center; margin:0 0 24px}
   .nextvol a{display:inline-block; color:#2a1d10; background:var(--gold); border-radius:30px; padding:12px 28px; text-decoration:none; font-weight:700; letter-spacing:.1em}
-
-  .player .top{display:flex; align-items:center; gap:10px; margin-bottom:6px}
-  .player .top .now-ttl{flex:1; margin-bottom:0; min-width:0}
-  .player .bottom{display:flex; align-items:center; gap:10px; margin-top:6px}
-  .player .bottom .msg{flex:1; min-width:0}
-  .player .pill{
-    font-family:inherit; font-size:14px; width:auto; height:auto; padding:6px 14px; border-radius:18px;
-    border:1px solid var(--line); background:var(--card); color:var(--ink); white-space:nowrap;
-  }
-  .player .pill[aria-pressed="true"]{background:var(--gold); color:#1b1608; border-color:var(--gold); font-weight:700}
-  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(150px + env(safe-area-inset-bottom,0px));
-    background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:10px; font-size:14px; z-index:30; max-width:calc(100% - 32px)}
-  .toast[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -144,10 +131,7 @@
 
 <div class="player">
   <div class="in">
-    <div class="top">
-      <div class="now-ttl" id="nowttl">「本をひらいて　読む・聞く」で続けて聞けます</div>
-      <button class="pill" id="timerBtn" type="button" aria-label="おやすみタイマー" aria-pressed="false">☾ タイマー</button>
-    </div>
+    <div class="now-ttl" id="nowttl">「本をひらいて　読む・聞く」で続けて聞けます</div>
     <div class="ctrl">
       <button id="prev" aria-label="前の話">⏮</button>
       <button id="play" class="main" aria-label="再生">▶</button>
@@ -155,20 +139,17 @@
       <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
       <span class="time" id="time">0:00 / 0:00</span>
     </div>
-    <div class="bottom">
-      <div class="msg" id="msg"></div>
-      <button class="pill" id="contBtn" type="button" aria-label="続けて再生" aria-pressed="true">連続</button>
-    </div>
+    <div class="msg" id="msg"></div>
   </div>
 </div>
 
-
-<div class="toast" id="toast" hidden></div>
 <audio id="audio" preload="metadata"></audio>
 
 <script>
 const EPISODES = [{"no": "はじめに", "title": "時代と史実のこと", "era": "", "audio": "audio/00_hajimeni.mp3", "html": "<p class=\"q\">「谷の<ruby>割付状<rt>わりつけじょう</rt></ruby>　<ruby>南相木村<rt>みなみあいきむら</rt></ruby>・<ruby>天保<rt>てんぽう</rt></ruby>の<ruby>名主<rt>なぬし</rt></ruby>ものがたり」。はじめに。</p><p>江戸時代、南相木村は幕府の<ruby>直轄地<rt>ちょっかつち</rt></ruby>、<ruby>天領<rt>てんりょう</rt></ruby>でした。戦国の世にこの谷を治めた<ruby>相木氏<rt>あいきし</rt></ruby>は、<ruby>武田家<rt>たけだけ</rt></ruby>がほろびたのち<ruby>上州<rt>じょうしゅう</rt></ruby>へ去り、谷に殿様はいなくなりました。年貢を取り立てたのは、遠く<ruby>小諸<rt>こもろ</rt></ruby>の<ruby>御影<rt>みかげ</rt></ruby>にあった<ruby>代官所<rt>だいかんしょ</rt></ruby>です。</p><p>村は<ruby>南相木川<rt>みなみあいきがわ</rt></ruby>にそって東西<ruby>五里<rt>ごり</rt></ruby>、南北<ruby>一里<rt>いちり</rt></ruby>の細長い谷。田はわずかで、人びとは畑と山の仕事で暮らしを立てていました。谷の中ほどを通る<ruby>上州道<rt>じょうしゅうみち</rt></ruby>は、山をこえて<ruby>上野国<rt>こうずけのくに</rt></ruby>へ、そして<ruby>秩父<rt>ちちぶ</rt></ruby>へと続いていました。</p><p>代官所と村とをつないだのが、村人の中から選ばれた名主です。<ruby>組頭<rt>くみがしら</rt></ruby>がこれを助け、<ruby>百姓代<rt>ひゃくしょうだい</rt></ruby>が、<ruby>百姓<rt>ひゃくしょう</rt></ruby>の立場から村の<ruby>政<rt>まつりごと</rt></ruby>を見守りました。名主は村の顔であり、村の声を代官所へ届ける役目も負っていました。</p><p>毎年秋になると、代官所から名主あてに、<ruby>年貢割付状<rt>ねんぐわりつけじょう</rt></ruby>が届きます。割付状とは、その年に村が納める年貢の額を知らせる、納税の通知書です。宛先は名主ひとりではなく、組頭と<ruby>惣百姓<rt>そうびゃくしょう</rt></ruby>、つまり村の者すべてでした。名主は、百姓<ruby>一軒一軒<rt>いっけんいっけん</rt></ruby>の<ruby>持ち高<rt>もちだか</rt></ruby>に応じて年貢を割り振り、取り立て、村としてまとめて納めました。年貢は村全体で請け負うもの。払えない家があれば、村で支え合いました。田の少ない山の村では、年貢をお金で納めることも多かったのです。</p><p>名主の家には、村の田畑を記した<ruby>検地帳<rt>けんちちょう</rt></ruby>や、毎年の割付状、年貢を納め終えたしるしの<ruby>皆済目録<rt>かいさいもくろく</rt></ruby>などが、代々大切にしまわれていました。今、わたしたちが昔の村のすがたを知ることができるのは、こうした古い<ruby>帳面<rt>ちょうめん</rt></ruby>が残されてきたおかげです。</p><p>天保三年、村には芝居小屋、<ruby>神楽殿<rt>かぐらでん</rt></ruby>が建てられました。その建物は今も、<ruby>廻り舞台<rt>まわりぶたい</rt></ruby>をそなえた民俗資料館として残っています。そして翌、天保四年ごろから、冷たい夏と<ruby>凶作<rt>きょうさく</rt></ruby>が国じゅうをおそいました。天保の<ruby>飢饉<rt>ききん</rt></ruby>です。</p><p>この物語は、こうした史実と、天領の村のしくみをもとにした創作です。名主の<ruby>清兵衛<rt>せいべえ</rt></ruby>、息子の<ruby>与吉<rt>よきち</rt></ruby>、百姓代の<ruby>源次<rt>げんじ</rt></ruby>たちは<ruby>架空<rt>かくう</rt></ruby>の人物で、村で実際にあった出来事を記したものではありません。</p><p>第一話「割付状の届く日」。第二話「冷たい夏」。第三話「御影への道」。第四話「峠をこえる炭」。第五話「廻り舞台」。</p><p>五つの話を、どうぞお聞きください。</p>"}, {"no": "第一話", "title": "割付状の届く日", "era": "天保三年　秋", "audio": "audio/01_waritsuke_jou.mp3", "html": "<p>第一話。<ruby>割付状<rt>わりつけじょう</rt></ruby>の届く日。</p><p><ruby>天保<rt>てんぽう</rt></ruby>三年の秋。山の木々が色づきはじめたころ、<ruby>名主<rt>なぬし</rt></ruby>の<ruby>清兵衛<rt>せいべえ</rt></ruby>は、<ruby>囲炉裏<rt>いろり</rt></ruby>ばたで一枚の紙をひろげていた。</p><p class=\"q\">「<ruby>卯御年貢可納割付之事<rt>うのおんねんぐおさむべきわりつけのこと</rt></ruby>」。</p><p><ruby>御影<rt>みかげ</rt></ruby>の<ruby>代官所<rt>だいかんしょ</rt></ruby>から届いた割付状である。あて名は「<ruby>南相木村<rt>みなみあいきむら</rt></ruby>　名主・<ruby>組頭<rt>くみがしら</rt></ruby>・<ruby>惣百姓<rt>そうびゃくしょう</rt></ruby>」。村の者すべてにあてた、今年の年貢の知らせだった。</p><p class=\"q\">「どうだい、おとっつぁん」</p><p>十五になる息子の<ruby>与吉<rt>よきち</rt></ruby>が、横からのぞきこんだ。</p><p class=\"q\">「<ruby>定免<rt>じょうめん</rt></ruby>のとおりだ。<ruby>去年<rt>きょねん</rt></ruby>と同じだよ」</p><p>清兵衛はほっとしたように言った。定免とは、豊作でも不作でも、決められた年数のあいだ同じ額を納めるやり方である。数字が変わらないのは、ありがたいことでもあり、おそろしいことでもあった。<ruby>凶作<rt>きょうさく</rt></ruby>の年にも、同じだけ納めなくてはならないからだ。</p><p>その夜、清兵衛は組頭の<ruby>茂左衛門<rt>もざえもん</rt></ruby>と、<ruby>百姓代<rt>ひゃくしょうだい</rt></ruby>の<ruby>源次<rt>げんじ</rt></ruby>を家に呼んだ。<ruby>行灯<rt>あんどん</rt></ruby>の明かりの下で三人は<ruby>帳面<rt>ちょうめん</rt></ruby>をめくり、<ruby>百姓<rt>ひゃくしょう</rt></ruby><ruby>一軒一軒<rt>いっけんいっけん</rt></ruby>の<ruby>持ち高<rt>もちだか</rt></ruby>に応じて、年貢を割り振っていく。そろばんの玉をはじく音だけが、静かな部屋にひびいた。</p><p class=\"q\">「おさよのところは、今年も大丈夫かね」</p><p>源次がぽつりと言った。おさよは去年、夫を山の事故で亡くし、幼い子ふたりをかかえていた。</p><p class=\"q\">「畑は親戚が手伝っている。なんとかなるだろう」</p><p>茂左衛門が答えた。清兵衛は黙って、帳面に筆を走らせた。</p><p>この年、村の<ruby>中島<rt>なかじま</rt></ruby>では、新しい<ruby>神楽殿<rt>かぐらでん</rt></ruby>ができあがったばかりだった。<ruby>茅葺き<rt>かやぶき</rt></ruby>の大きな屋根の下には、くるりと回る舞台まで仕掛けてある。村の<ruby>大工<rt>だいく</rt></ruby>たちが、ひと夏かけてこしらえたものだ。</p><p>秋祭りの晩、村の若い衆が化粧をして芝居を演じた。与吉も、生まれてはじめて<ruby>女形<rt>おやま</rt></ruby>の役をもらった。</p><p>笛と太鼓の音が谷にひびき、ろうそくの灯が舞台をゆらゆらと照らした。舞台がくるりと回るたびに、年寄りも子どもも、手をたたいて笑った。</p><p class=\"q\">「いい年だったな」</p><p>帰り道、清兵衛は星空を見あげてつぶやいた。冷たい川風が、ほてった<ruby>頬<rt>ほお</rt></ruby>に心地よかった。</p><p>だがこの晩が、しばらくのあいだ、谷でいちばん明るい夜になるとは、まだ誰も知らなかった。</p>"}];
 const NEXT_MSG = '一の巻を聞き終えました。次は二の巻へ';
+const ALL = [{"no": "はじめに", "title": "時代と史実のこと", "audio": "audio/00_hajimeni.mp3", "maki": "一の巻", "page": "index.html"}, {"no": "第一話", "title": "割付状の届く日", "audio": "audio/01_waritsuke_jou.mp3", "maki": "一の巻", "page": "index.html"}, {"no": "第二話", "title": "冷たい夏", "audio": "audio/02_tsumetai_natsu.mp3", "maki": "二の巻", "page": "maki2.html"}, {"no": "第三話", "title": "御影への道", "audio": "audio/03_mikageno_michi.mp3", "maki": "三の巻", "page": "maki3.html"}, {"no": "第四話", "title": "峠をこえる炭", "audio": "audio/04_tougeno_sumi.mp3", "maki": "四の巻", "page": "maki4.html"}, {"no": "第五話", "title": "廻り舞台", "audio": "audio/05_mawari_butai.mp3", "maki": "五の巻", "page": "maki5.html"}];
+const START = 0;
 
 const audio = document.getElementById('audio');
 const list = document.getElementById('list');
@@ -178,49 +159,57 @@ const seek = document.getElementById('seek');
 const timeEl = document.getElementById('time');
 const nowttl = document.getElementById('nowttl');
 const msg = document.getElementById('msg');
-let cur = -1;
-let continuous = true;
-
+let cur = -1;   // ALL（全五巻を通した順番）の中の位置
 
 EPISODES.forEach((ep,i)=>{
   const li = document.createElement('li');
   li.innerHTML = `<span class="no">${ep.no}</span><span class="ttl">${ep.title}</span><span class="mark">♪ 再生中</span>`;
-  li.onclick = ()=>{ load(i,true); };
+  li.onclick = ()=>{ load(START+i,true); };
   list.appendChild(li);
 
   const art = document.createElement('article');
   art.id = 'ep'+i;
   art.innerHTML = `<h2>${ep.no}　${ep.title}</h2>${ep.era?`<div class="era">${ep.era}</div>`:''}<button class="readbtn">▶ この話を聞く</button>${ep.html}`;
-  art.querySelector('.readbtn').onclick = ()=>{ load(i,true); };
+  art.querySelector('.readbtn').onclick = ()=>{ load(START+i,true); };
   texts.appendChild(art);
 });
 
 function fmt(t){ if(!isFinite(t)) return '0:00'; const m=Math.floor(t/60), s=Math.floor(t%60); return m+':'+String(s).padStart(2,'0'); }
+function local(){ const k = cur-START; return (k>=0 && k<EPISODES.length) ? k : -1; }
 
 function mark(){
-  [...list.children].forEach((li,i)=>li.classList.toggle('now',i===cur));
-  [...texts.children].forEach((a,i)=>a.classList.toggle('now',i===cur));
+  const k = local();
+  [...list.children].forEach((li,i)=>li.classList.toggle('now',i===k));
+  [...texts.children].forEach((a,i)=>a.classList.toggle('now',i===k));
 }
 
-function load(i, autoplay){
-  if(i<0 || i>=EPISODES.length) return;
-  audio.volume = 1;
-  cur = i;
+/* 全五巻を通して、はじめから最後まで続けて再生する */
+function load(g, autoplay){
+  if(g<0 || g>=ALL.length) return;
+  cur = g;
   msg.textContent = '';
-  audio.src = EPISODES[i].audio;
-  nowttl.textContent = EPISODES[i].no + '　' + EPISODES[i].title;
+  const a = ALL[g];
+  audio.src = a.audio;
+  const k = local();
+  if(k>=0){
+    nowttl.textContent = a.no + '　' + a.title;
+    document.getElementById('ep'+k).scrollIntoView({behavior:'smooth', block:'start'});
+  }else{
+    nowttl.textContent = a.maki + '　' + a.no + '　' + a.title;
+    msg.textContent = 'この話の本文は「' + a.maki + '」のページにあります（再生はこのまま続きます）';
+    const nv = document.getElementById('nextvol'); if(nv) nv.style.display='block';
+  }
   mark();
-  document.getElementById('ep'+i).scrollIntoView({behavior:'smooth', block:'start'});
   if(autoplay){ audio.play().catch(()=>{}); }
 }
 
-document.getElementById('playall').onclick = ()=>{ load(0,true); };
+document.getElementById('playall').onclick = ()=>{ load(START,true); };
 playBtn.onclick = ()=>{
-  if(cur<0){ load(0,true); return; }
+  if(cur<0){ load(START,true); return; }
   if(audio.paused) audio.play().catch(()=>{}); else audio.pause();
 };
 document.getElementById('prev').onclick = ()=>{ load(Math.max(0,cur-1),true); };
-document.getElementById('next').onclick = ()=>{ if(cur<EPISODES.length-1) load(cur+1,true); };
+document.getElementById('next').onclick = ()=>{ if(cur<ALL.length-1) load(cur+1,true); };
 
 audio.addEventListener('play', ()=>{ playBtn.textContent='⏸'; });
 audio.addEventListener('pause', ()=>{ playBtn.textContent='▶'; });
@@ -230,52 +219,12 @@ audio.addEventListener('timeupdate', ()=>{
 });
 seek.addEventListener('input', ()=>{ if(audio.duration) audio.currentTime = seek.value/100*audio.duration; });
 audio.addEventListener('ended', ()=>{
-  if(SLEEP[sleepIdx]===-1){ resetSleep(); playBtn.textContent='▶'; toast('おやすみなさい'); return; }
-  if(continuous && cur < EPISODES.length-1){ load(cur+1,true); }
-  else { playBtn.textContent='▶'; nowttl.textContent=NEXT_MSG; document.getElementById('nextvol').style.display='block'; }
+  if(cur < ALL.length-1){ load(cur+1,true); }
+  else { playBtn.textContent='▶'; nowttl.textContent='『谷の割付状』全五巻、おわりまで聞きました'; msg.textContent=''; }
 });
 audio.addEventListener('error', ()=>{
-  if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + EPISODES[cur].audio + '）';
+  if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + ALL[cur].audio + '）';
 });
-
-/* ---- お知らせ ---- */
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600);}
-
-/* ---- 連続（押すたびにオン・オフ） ---- */
-const contBtn=document.getElementById('contBtn');
-function showCont(){contBtn.setAttribute('aria-pressed',continuous);}
-contBtn.onclick=()=>{continuous=!continuous;showCont();toast(continuous?'終わったら次の朗読へ進みます':'一話ずつ止まります');};
-showCont();
-
-/* ---- おやすみタイマー（押すたびに 15分→20分→30分→この話まで→切） ---- */
-const SLEEP=[0,15,20,30,-1];
-let sleepIdx=0,deadline=null,fading=null;
-function resetSleep(){sleepIdx=0;deadline=null;showSleep();}
-function showSleep(){
-  const b=document.getElementById('timerBtn'),m=SLEEP[sleepIdx];b.setAttribute('aria-pressed',m!==0);
-  b.textContent=m===0?'☾ タイマー':m===-1?'☾ この話まで':'☾ 残り'+fmt(Math.max(0,deadline-Date.now())/1000);
-}
-function checkSleep(){
-  if(!deadline||fading)return;
-  if(Date.now()>=deadline){
-    if(audio.paused){resetSleep();return;}
-    let v=1;fading=setInterval(()=>{v-=0.05;try{audio.volume=Math.max(0,v)}catch(e){}
-      if(v<=0){clearInterval(fading);fading=null;audio.pause();try{audio.volume=1}catch(e){}resetSleep();toast('おやすみなさい');}},500);
-  }
-}
-document.getElementById('timerBtn').onclick=()=>{
-  if(fading){clearInterval(fading);fading=null;try{audio.volume=1}catch(e){}}
-  sleepIdx=(sleepIdx+1)%SLEEP.length;const m=SLEEP[sleepIdx];
-  deadline=m>0?Date.now()+m*60000:null;showSleep();
-  toast(m===0?'タイマーを切りました':m===-1?'いまの朗読が終わったら止めます':m+'分後にゆっくり止めます');
-};
-setInterval(()=>{if(deadline)showSleep();checkSleep();},1000);
-showSleep();
-
-/* 本棚の目次から開いたとき（#ep1 など）、その話を選んでおく */
-function openFromHash(){ const m=location.hash.match(/^#ep(\d+)$/); if(m && EPISODES[+m[1]]) load(+m[1], false); }
-window.addEventListener('hashchange', openFromHash);
-setTimeout(openFromHash, 200);
 </script>
 </body>
 </html>
