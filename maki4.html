@@ -94,6 +94,11 @@
   .volnav a.off{visibility:hidden}
   .nextvol{display:none; text-align:center; margin:0 0 24px}
   .nextvol a{display:inline-block; color:#2a1d10; background:var(--gold); border-radius:30px; padding:12px 28px; text-decoration:none; font-weight:700; letter-spacing:.1em}
+  /* 読み上げに合わせた文字送り */
+  body.playing article.now p{opacity:.5; transition:opacity .6s}
+  body.playing article.now p.reading{opacity:1}
+  .player button.follow{width:auto; padding:0 10px; font-size:13px}
+  .player button.follow.off{opacity:.5}
 </style>
 </head>
 <body>
@@ -138,6 +143,7 @@
       <button id="next" aria-label="次の話">⏭</button>
       <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
       <span class="time" id="time">0:00 / 0:00</span>
+      <button id="follow" class="follow" aria-label="文字送りの入り切り">文字送り 入</button>
     </div>
     <div class="msg" id="msg"></div>
   </div>
@@ -225,6 +231,59 @@ audio.addEventListener('ended', ()=>{
 audio.addEventListener('error', ()=>{
   if(cur>=0) msg.textContent = 'この話の音声はまだ入っていません（' + ALL[cur].audio + '）';
 });
+
+/* ===== 読み上げに合わせて、本文を少しずつ送る =====
+   話の長さ（文字数）と再生位置の割合から、いま読んでいるあたりを求めます。
+   画面を指で動かしたときは、しばらく文字送りを止めます。 */
+let follow = true, hold = 0, targetY = null;
+const followBtn = document.getElementById('follow');
+followBtn.onclick = ()=>{
+  follow = !follow;
+  followBtn.textContent = follow ? '文字送り 入' : '文字送り 切';
+  followBtn.classList.toggle('off', !follow);
+  if(!follow) targetY = null;
+};
+['touchstart','wheel'].forEach(ev=>window.addEventListener(ev, ()=>{ hold = Date.now(); targetY = null; }, {passive:true}));
+function plainLen(p){
+  let n = 0;
+  p.childNodes.forEach(c=>{
+    if(c.nodeType === 3) n += c.textContent.length;
+    else if(c.tagName === 'RUBY') c.childNodes.forEach(x=>{ if(x.tagName !== 'RT') n += x.textContent.length; });
+    else n += c.textContent.length;
+  });
+  return Math.max(n, 1);
+}
+const paraCache = {};
+function paras(k){
+  if(paraCache[k]) return paraCache[k];
+  const ps = [...document.querySelectorAll('#ep'+k+' p')];
+  const len = ps.map(plainLen), start = [];
+  let t = 0; len.forEach(l=>{ start.push(t); t += l; });
+  return (paraCache[k] = {ps, len, start, total:t});
+}
+function followAt(time, dur){
+  const k = local();
+  if(k < 0 || !dur) return;
+  const info = paras(k);
+  const pos = time / dur * info.total;
+  let i = 0;
+  while(i < info.ps.length-1 && pos >= info.start[i+1]) i++;
+  const within = Math.min(1, Math.max(0, (pos - info.start[i]) / info.len[i]));
+  info.ps.forEach((p,j)=>p.classList.toggle('reading', j === i));
+  if(!follow || Date.now() - hold < 6000) return;
+  const r = info.ps[i].getBoundingClientRect();
+  targetY = window.scrollY + r.top + r.height * within - window.innerHeight * 0.4;
+}
+audio.addEventListener('timeupdate', ()=>{ if(!audio.paused) followAt(audio.currentTime, audio.duration); });
+audio.addEventListener('play', ()=>document.body.classList.add('playing'));
+audio.addEventListener('pause', ()=>{ document.body.classList.remove('playing'); targetY = null; });
+audio.addEventListener('ended', ()=>{ targetY = null; });
+setInterval(()=>{
+  if(targetY !== null && follow && Date.now() - hold >= 6000){
+    const d = targetY - window.scrollY;
+    if(Math.abs(d) > 1) window.scrollTo(0, window.scrollY + d * 0.08);
+  }
+}, 33);
 </script>
 </body>
 </html>
